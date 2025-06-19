@@ -14,6 +14,7 @@ class AppConfig:
     
     # 認証設定
     DEFAULT_API_KEY = ""
+    DEFAULT_BASE_URL = ""
     
     # 機能設定
     DEFAULT_HOTKEY = "ctrl+shift+r"

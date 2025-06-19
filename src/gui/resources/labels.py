@@ -54,6 +54,9 @@ class AppLabels:
     API_KEY_DIALOG_TITLE = "OpenAI APIキー"
     API_KEY_LABEL = "APIキー:"
     API_KEY_INFO = "このアプリケーションを使用するにはOpenAI APIキーが必要です。お持ちでない場合は、https://platform.openai.com/api-keys から取得できます。"
+    AZURE_BASE_URL_LABEL = "Azure OpenAI Base URL:"
+    AZURE_BASE_URL_PLACEHOLDER = "Enter Azure OpenAI Base URL (optional)"
+    AZURE_INFO = "If using Azure OpenAI, enter the Base URL here. Otherwise, leave blank."
     SAVE_BUTTON = "保存"
     CANCEL_BUTTON = "キャンセル"
     

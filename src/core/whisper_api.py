@@ -19,7 +19,7 @@ class WhisperTranscriber:
         {"id": "gpt-4o-mini-transcribe", "name": "GPT-4o Mini Transcribe", "description": "Lightweight and fast transcription model"}
     ]
     
-    def __init__(self, api_key=None):
+    def __init__(self, api_key=None, base_url=None):
         """
         Whisper文字起こしクラスの初期化
         
@@ -27,15 +27,21 @@ class WhisperTranscriber:
         ----------
         api_key : str, optional
             OpenAI APIキー。提供されない場合はOPENAI_API_KEY環境変数から取得を試みます。
+        base_url : str, optional
+            OpenAI APIのベースURL。Azureなどで使用します。
         """
         # 提供されたAPIキーを使用するか、環境から取得
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
+        self.base_url = base_url
         
         if not self.api_key:
             raise ValueError("OpenAI API key is required. Please provide it directly or set the OPENAI_API_KEY environment variable.")
         
         # OpenAIクライアントの初期化
-        self.client = openai.OpenAI(api_key=self.api_key)
+        if self.base_url:
+            self.client = openai.OpenAI(api_key=self.api_key, base_url=self.base_url)
+        else:
+            self.client = openai.OpenAI(api_key=self.api_key)
         
         # デフォルトパラメータの設定
         self.model = "whisper-1"  # 使用するWhisperモデル
