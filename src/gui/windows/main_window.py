@@ -45,6 +45,7 @@ class MainWindow(QMainWindow):
         # 設定の読み込み
         self.settings = QSettings(AppConfig.APP_ORGANIZATION, AppConfig.APP_NAME)
         self.api_key = self.settings.value("api_key", AppConfig.DEFAULT_API_KEY)
+        self.base_url = self.settings.value("base_url", AppConfig.DEFAULT_BASE_URL)
         
         # ホットキーとクリップボード設定
         self.hotkey = self.settings.value("hotkey", AppConfig.DEFAULT_HOTKEY)
@@ -79,7 +80,7 @@ class MainWindow(QMainWindow):
         # 初期状態では表示しない - 録音開始時に表示する
         
         try:
-            self.whisper_transcriber = WhisperTranscriber(api_key=self.api_key)
+            self.whisper_transcriber = WhisperTranscriber(api_key=self.api_key, base_url=self.base_url)
         except ValueError:
             self.whisper_transcriber = None
         
@@ -340,15 +341,25 @@ class MainWindow(QMainWindow):
         
         APIキーの入力、保存、検証を行うダイアログを表示します。
         """
-        dialog = APIKeyDialog(self, self.api_key)
+        dialog = APIKeyDialog(self, self.api_key, self.base_url)
         if dialog.exec():
+            old_api_key = self.api_key
+            old_base_url = self.base_url
+
             self.api_key = dialog.get_api_key()
+            self.base_url = dialog.get_base_url()
+
             self.settings.setValue("api_key", self.api_key)
+            self.settings.setValue("base_url", self.base_url)
             
-            # 新しいAPIキーでトランスクライバーを再初期化
+            # 新しいAPIキーとBase URLでトランスクライバーを再初期化
             try:
-                self.whisper_transcriber = WhisperTranscriber(api_key=self.api_key)
-                self.status_bar.showMessage(AppLabels.STATUS_API_KEY_SAVED, 3000)
+                self.whisper_transcriber = WhisperTranscriber(api_key=self.api_key, base_url=self.base_url)
+                if self.api_key != old_api_key or self.base_url != old_base_url:
+                    self.status_bar.showMessage("APIキーとベースURLが更新されました", 3000) # TODO: Add to AppLabels
+                else:
+                    # No actual change, but dialog was accepted
+                    self.status_bar.showMessage("設定ダイアログを閉じました", 3000) # TODO: Add to AppLabels
             except ValueError as e:
                 self.whisper_transcriber = None
                 QMessageBox.warning(self, AppLabels.ERROR_TITLE, AppLabels.ERROR_API_KEY_MISSING)
